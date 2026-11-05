@@ -33,9 +33,15 @@
   #combo{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);text-align:center;width:min(92vw,720px)}
   #comboTricks{font-size:18px;font-weight:800;text-shadow:2px 2px 0 var(--ink),-1px -1px 0 var(--ink)}
   #comboPts{display:inline-block;margin-top:6px;font-size:26px;font-weight:900;font-style:italic;color:var(--sun);text-shadow:3px 3px 0 var(--ink)}
+  #comboMult{color:var(--mint);font-size:34px;margin-left:4px}
+  #comboPts.bump{animation:bump .28s ease-out}
+  @keyframes bump{0%{transform:scale(1.35) rotate(-3deg)}100%{transform:scale(1)}}
+  #comboBar{width:200px;height:7px;margin:8px auto 0;border-radius:4px;background:rgba(15,23,36,.6);border:2px solid var(--ink);overflow:hidden}
+  #comboFill{display:block;height:100%;width:100%;background:var(--sun)}
+  #comboBar.draining #comboFill{background:var(--hot)}
   #popup{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);font-size:46px;font-weight:900;font-style:italic;opacity:0;white-space:nowrap;text-shadow:4px 4px 0 var(--ink)}
   #popup.show{animation:pop 1.3s ease-out forwards}
-  #popup.good{color:var(--mint)} #popup.bad{color:var(--hot)} #popup.info{color:var(--sun)}
+  #popup.good{color:var(--mint)} #popup.huge{font-size:66px} #popup.bad{color:var(--hot)} #popup.info{color:var(--sun)}
   @keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}25%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
   #balance{position:absolute;left:50%;bottom:200px;transform:translateX(-50%);width:220px;height:16px;border-radius:8px;border:2px solid var(--paper);background:linear-gradient(90deg,var(--hot),var(--sun) 30%,var(--mint) 45%,var(--mint) 55%,var(--sun) 70%,var(--hot));box-shadow:var(--shadow)}
   #balNeedle{position:absolute;top:-6px;width:6px;height:24px;margin-left:-3px;left:50%;background:var(--ink);border:2px solid var(--paper);border-radius:3px}
@@ -74,7 +80,7 @@
   body.touch #help{display:none}
   body.touch #combo{bottom:190px}
   body.touch #balance{bottom:250px}
-  @media (max-width:600px){#letters{top:62px} #score{font-size:24px} #popup{font-size:34px}}
+  @media (max-width:600px){#letters{top:62px} #score{font-size:24px} #popup{font-size:34px} #popup.huge{font-size:44px}}
 </style>
 </head>
 <body>
@@ -84,7 +90,7 @@
   <div id="scoreBox" class="chip"><div class="label">SCORE</div><div id="score">0</div><div class="sub">BEST <span id="bestHud">0</span></div></div>
   <div id="timer" class="chip">2:00</div>
   <div id="letters"><span>S</span><span>K</span><span>A</span><span>T</span><span>E</span></div>
-  <div id="combo" class="hidden"><div id="comboTricks"></div><div id="comboPts"></div></div>
+  <div id="combo" class="hidden"><div id="comboTricks"></div><div id="comboPts"><span id="comboBase"></span><span id="comboMult"></span></div><div id="comboBar"><i id="comboFill"></i></div></div>
   <div id="balance" class="hidden"><div id="balNeedle"></div></div>
   <div id="popup"></div>
   <div id="speed"></div>
@@ -106,7 +112,7 @@
 <div id="menu" class="overlay hidden">
   <div class="panel">
     <h1>CONCRETE<br>WAVE</h1>
-    <p class="tag">Land tricks, chain combos, grab all five S‑K‑A‑T‑E letters.</p>
+    <p class="tag">Pop, flip, grind, chain it all together. Grab all five S‑K‑A‑T‑E letters.</p>
     <div class="btns">
       <button class="big" data-start="session">2‑Minute Session</button>
       <button class="big alt" data-start="free">Free Skate</button>
@@ -118,7 +124,7 @@
       <b>J K L I</b><span>Kickflip · Heelflip · Pop Shove‑It · Impossible</span>
       <b>H (hold)</b><span>Indy grab — longer is worth more</span>
       <b>Grind</b><span>Ollie onto a rail or ledge and land on it</span>
-      <span class="full">Tricks in one run stack into a combo — points × number of tricks. Land straight to bank it, bail and it's gone. Quarter pipes send you straight up. On a phone: left thumb drags to steer/push, buttons on the right.</span>
+      <span class="full">Every trick adds to your combo and its multiplier. After you land you get a moment (watch the bar) to pop again and keep the combo going — chain ollies, flips and grinds for huge scores. Only landing almost sideways or starting a flip right before you touch down makes you bail. Quarter pipes send you straight up. On a phone: left thumb drags to steer/push, buttons on the right.</span>
     </div>
   </div>
 </div>
