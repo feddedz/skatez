@@ -1,17 +1,3 @@
-# Concrete Wave 🛹
-
-A 3D skateboarding game that runs entirely in the browser. Built with [Three.js](https://threejs.org) (loaded from a CDN), no build step, no dependencies to install.
-
-**Features:** an animated skater (pushing, crouch-and-pop ollies, tucked flips, grabs, grind balancing, wipe-outs, fist pumps) · a skatepark with four quarter pipes, a funbox, kickers, a gap, a stair set with handrail, ledges and rails · ollies, kickflips, heelflips, shove-its, impossibles, grabs and spins · 50-50 grinds and boardslides with a balance meter · combo multiplier scoring · 2-minute sessions with a saved high score · S-K-A-T-E letters to collect · sparks, dust, slow-mo hang time and screen shake · procedural sound · touch controls on phones.
-
-## Put it on GitHub Pages
-
-1. Create a new repository on GitHub (e.g. `skate`).
-2. Upload `index.html`, `game.js`, `.nojekyll` and this README to the root of the repo (drag them into the "Add file → Upload files" page, or `git push` them).
-3. Go to **Settings → Pages**, under **Build and deployment** pick **Deploy from a branch**, branch **main**, folder **/ (root)**, and save.
-4. After a minute the game is live at `https://<your-username>.github.io/<repo-name>/`.
-
-> Name the repo `<your-username>.github.io` instead if you want it at the root of your GitHub Pages domain.
 
 ## Run it locally
 
