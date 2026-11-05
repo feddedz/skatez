@@ -2,7 +2,7 @@
 
 A 3D skateboarding game that runs entirely in the browser. Built with [Three.js](https://threejs.org) (loaded from a CDN), no build step, no dependencies to install.
 
-**Features:** a skatepark with four quarter pipes, a funbox, kickers, a gap, a stair set with handrail, ledges and rails · ollies, kickflips, heelflips, shove-its, impossibles, grabs and spins · 50-50 grinds and boardslides with a balance meter · combo multiplier scoring · 2-minute sessions with a saved high score · S-K-A-T-E letters to collect · procedural sound · touch controls on phones.
+**Features:** an animated skater (pushing, crouch-and-pop ollies, tucked flips, grabs, grind balancing, wipe-outs, fist pumps) · a skatepark with four quarter pipes, a funbox, kickers, a gap, a stair set with handrail, ledges and rails · ollies, kickflips, heelflips, shove-its, impossibles, grabs and spins · 50-50 grinds and boardslides with a balance meter · combo multiplier scoring · 2-minute sessions with a saved high score · S-K-A-T-E letters to collect · sparks, dust, slow-mo hang time and screen shake · procedural sound · touch controls on phones.
 
 ## Put it on GitHub Pages
 
@@ -38,7 +38,7 @@ python3 -m http.server 8000
 
 On phones: drag anywhere on the left half to steer (up = push, down = brake); trick buttons are on the right.
 
-**Scoring:** every trick in one run (air → grind → air…) adds to the combo; the combo is worth its points × the number of tricks. Land with the board lined up to bank it — land mid-flip or sideways and you bail and lose it. Repeating the same trick in a combo is worth less each time. Each S-K-A-T-E letter is worth 500, and collecting all five adds a 2,000 bonus.
+**Scoring:** every trick adds points and bumps the multiplier. After you land, a bar under the combo drains for about a second — pop again before it empties and the combo keeps going (chain ollies, flips, grabs and grinds for huge numbers). When it runs out, the combo is banked as points × multiplier, with a rating from NICE up to LEGENDARY. You only bail if you land nearly sideways or start a flip right before touching down. Each S-K-A-T-E letter is worth 500, and collecting all five adds a 2,000 bonus.
 
 ## Files
 
