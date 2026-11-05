@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#0f1724">
+<title>Concrete Wave — 3D Skateboarding</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛹</text></svg>">
+<style>
+  :root{
+    --ink:#0f1724; --paper:#fffaf0; --hot:#ff5a36; --sun:#ffd23f; --mint:#3ddc97; --sky:#8fc8ff;
+    --shadow: 3px 3px 0 var(--ink);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--ink);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;color:var(--paper);user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+  #game{position:fixed;inset:0}
+  #game canvas{display:block;touch-action:none}
+  .hidden{display:none !important}
+
+  /* ---------- HUD ---------- */
+  #hud{position:fixed;inset:0;pointer-events:none}
+  .chip{background:var(--ink);border:2px solid var(--paper);border-radius:10px;padding:6px 12px;box-shadow:var(--shadow)}
+  #scoreBox{position:absolute;left:16px;top:16px}
+  #scoreBox .label{font-size:11px;letter-spacing:.18em;opacity:.7}
+  #score{font-size:30px;font-weight:900;font-style:italic;line-height:1}
+  #scoreBox .sub{font-size:12px;opacity:.75;margin-top:2px}
+  #timer{position:absolute;left:50%;top:16px;transform:translateX(-50%);font-size:28px;font-weight:900;font-style:italic;min-width:96px;text-align:center}
+  #timer.low{background:var(--hot);animation:pulse .5s infinite alternate}
+  @keyframes pulse{to{transform:translateX(-50%) scale(1.08)}}
+  #letters{position:absolute;right:16px;top:16px;display:flex;gap:6px}
+  #letters span{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:900;border:2px solid var(--paper);background:rgba(15,23,36,.6);color:rgba(255,250,240,.35)}
+  #letters span.got{background:var(--sun);color:var(--ink);border-color:var(--ink);box-shadow:var(--shadow)}
+  #combo{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);text-align:center;width:min(92vw,720px)}
+  #comboTricks{font-size:18px;font-weight:800;text-shadow:2px 2px 0 var(--ink),-1px -1px 0 var(--ink)}
+  #comboPts{display:inline-block;margin-top:6px;font-size:26px;font-weight:900;font-style:italic;color:var(--sun);text-shadow:3px 3px 0 var(--ink)}
+  #popup{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);font-size:46px;font-weight:900;font-style:italic;opacity:0;white-space:nowrap;text-shadow:4px 4px 0 var(--ink)}
+  #popup.show{animation:pop 1.3s ease-out forwards}
+  #popup.good{color:var(--mint)} #popup.bad{color:var(--hot)} #popup.info{color:var(--sun)}
+  @keyframes pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}25%{transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-90%) scale(1)}}
+  #balance{position:absolute;left:50%;bottom:200px;transform:translateX(-50%);width:220px;height:16px;border-radius:8px;border:2px solid var(--paper);background:linear-gradient(90deg,var(--hot),var(--sun) 30%,var(--mint) 45%,var(--mint) 55%,var(--sun) 70%,var(--hot));box-shadow:var(--shadow)}
+  #balNeedle{position:absolute;top:-6px;width:6px;height:24px;margin-left:-3px;left:50%;background:var(--ink);border:2px solid var(--paper);border-radius:3px}
+  #speed{position:absolute;left:16px;bottom:16px;font-size:13px;font-weight:700;opacity:.85}
+  #help{position:absolute;right:16px;bottom:16px;font-size:12px;opacity:.7;text-align:right;line-height:1.5;text-shadow:1px 1px 0 var(--ink)}
+
+  /* ---------- overlays ---------- */
+  .overlay{position:fixed;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at center,rgba(15,23,36,.55),rgba(15,23,36,.88));padding:16px;overflow:auto}
+  .panel{width:min(560px,100%);text-align:center}
+  h1{font-size:clamp(44px,11vw,84px);line-height:.9;font-weight:900;font-style:italic;letter-spacing:-.02em;color:var(--sun);text-shadow:5px 5px 0 var(--hot),9px 9px 0 var(--ink);transform:rotate(-4deg);margin-bottom:18px}
+  h2{font-size:40px;font-style:italic;font-weight:900;color:var(--sun);text-shadow:4px 4px 0 var(--ink);margin-bottom:10px}
+  .tag{opacity:.85;margin-bottom:22px}
+  .btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:22px}
+  button.big{font:inherit;font-size:18px;font-weight:900;font-style:italic;padding:14px 22px;border-radius:12px;border:3px solid var(--ink);background:var(--sun);color:var(--ink);box-shadow:4px 4px 0 var(--ink);cursor:pointer;transition:transform .08s}
+  button.big.alt{background:var(--paper)}
+  button.big:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--ink)}
+  button.big:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+  .controls{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;text-align:left;font-size:14px;background:rgba(15,23,36,.7);border:2px solid rgba(255,250,240,.3);border-radius:12px;padding:14px 18px}
+  .controls b{color:var(--sun);white-space:nowrap}
+  .controls .full{grid-column:1/-1;opacity:.75;font-size:13px;margin-top:4px}
+  #finalScore{font-size:56px;font-weight:900;font-style:italic;text-shadow:4px 4px 0 var(--ink)}
+  #newBest{color:var(--mint);font-weight:900;font-size:20px;margin:4px 0 18px}
+  #loading{position:fixed;inset:0;display:grid;place-items:center;background:var(--ink);font-size:22px;font-weight:900;font-style:italic;z-index:10;text-align:center;padding:20px}
+
+  /* ---------- touch controls ---------- */
+  #touch{position:fixed;inset:0;pointer-events:none}
+  #stickZone{position:absolute;left:0;bottom:0;width:50%;height:60%;pointer-events:auto;touch-action:none}
+  #stickBase{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;left:90px;bottom:30px;top:auto;border-radius:50%;border:3px solid rgba(255,250,240,.6);background:rgba(15,23,36,.35)}
+  #stickBase.on{bottom:auto}
+  #stickKnob{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;border-radius:50%;background:var(--sun);border:3px solid var(--ink)}
+  #tbtns{position:absolute;right:max(14px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(3,64px);gap:10px;pointer-events:auto;touch-action:none}
+  #tbtns button{font:inherit;font-weight:900;font-size:12px;height:64px;border-radius:50%;border:3px solid var(--ink);background:var(--paper);color:var(--ink);box-shadow:3px 3px 0 var(--ink);touch-action:none}
+  #tbtns button.down{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink);background:var(--sun)}
+  #tbtns .ollie{grid-column:2/4;border-radius:32px;background:var(--hot);color:var(--paper);font-size:16px}
+  #touchPause{position:absolute;right:16px;top:60px;pointer-events:auto;font:inherit;font-weight:900;border-radius:10px;border:2px solid var(--paper);background:var(--ink);color:var(--paper);padding:6px 12px}
+  body.touch #help{display:none}
+  body.touch #combo{bottom:190px}
+  body.touch #balance{bottom:250px}
+  @media (max-width:600px){#letters{top:62px} #score{font-size:24px} #popup{font-size:34px}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+
+<div id="hud" class="hidden">
+  <div id="scoreBox" class="chip"><div class="label">SCORE</div><div id="score">0</div><div class="sub">BEST <span id="bestHud">0</span></div></div>
+  <div id="timer" class="chip">2:00</div>
+  <div id="letters"><span>S</span><span>K</span><span>A</span><span>T</span><span>E</span></div>
+  <div id="combo" class="hidden"><div id="comboTricks"></div><div id="comboPts"></div></div>
+  <div id="balance" class="hidden"><div id="balNeedle"></div></div>
+  <div id="popup"></div>
+  <div id="speed"></div>
+  <div id="help">W/↑ push · S/↓ brake · A D steer &amp; spin<br>Space hold+release: ollie · J K L I flips · H grab<br>R reset · P pause · M mute</div>
+</div>
+
+<div id="touch" class="hidden">
+  <div id="stickZone"><div id="stickBase"><div id="stickKnob"></div></div></div>
+  <div id="tbtns">
+    <button data-b="kickflip">FLIP</button>
+    <button data-b="heelflip">HEEL</button>
+    <button data-b="shove">SHOVE</button>
+    <button data-b="grab">GRAB</button>
+    <button data-b="ollie" class="ollie">OLLIE</button>
+  </div>
+  <button id="touchPause">II</button>
+</div>
+
+<div id="menu" class="overlay hidden">
+  <div class="panel">
+    <h1>CONCRETE<br>WAVE</h1>
+    <p class="tag">Land tricks, chain combos, grab all five S‑K‑A‑T‑E letters.</p>
+    <div class="btns">
+      <button class="big" data-start="session">2‑Minute Session</button>
+      <button class="big alt" data-start="free">Free Skate</button>
+    </div>
+    <div class="controls">
+      <b>W / ↑</b><span>Push (S / ↓ to brake)</span>
+      <b>A D / ← →</b><span>Steer · spin in the air · balance on grinds</span>
+      <b>Space</b><span>Hold to crouch, release to ollie (longer = higher)</span>
+      <b>J K L I</b><span>Kickflip · Heelflip · Pop Shove‑It · Impossible</span>
+      <b>H (hold)</b><span>Indy grab — longer is worth more</span>
+      <b>Grind</b><span>Ollie onto a rail or ledge and land on it</span>
+      <span class="full">Tricks in one run stack into a combo — points × number of tricks. Land straight to bank it, bail and it's gone. Quarter pipes send you straight up. On a phone: left thumb drags to steer/push, buttons on the right.</span>
+    </div>
+  </div>
+</div>
+
+<div id="pause" class="overlay hidden">
+  <div class="panel">
+    <h2>PAUSED</h2>
+    <div class="btns">
+      <button class="big" id="resumeBtn">Resume</button>
+      <button class="big alt" id="quitBtn">Quit to menu</button>
+    </div>
+  </div>
+</div>
+
+<div id="results" class="overlay hidden">
+  <div class="panel">
+    <h2>SESSION OVER</h2>
+    <div id="finalScore">0</div>
+    <div id="newBest"></div>
+    <div class="btns">
+      <button class="big" data-start="session">Skate again</button>
+      <button class="big alt" data-start="free">Free Skate</button>
+    </div>
+  </div>
+</div>
+
+<div id="loading">Loading the park…</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
+<script type="module" src="./game.js"></script>
+<script>
+  // Shown if the module (or Three.js from the CDN) fails to load.
+  window.addEventListener('error', function (e) {
+    var l = document.getElementById('loading');
+    if (l && !l.classList.contains('hidden')) l.textContent = 'Could not start the game: ' + (e.message || 'script failed to load') + '. Check your connection and reload.';
+  }, true);
+</script>
+</body>
+</html>
